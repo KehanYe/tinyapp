@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const PORT = 3005;
 
+// set view engine to ejs
+app.set("view engine", "ej");
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
