@@ -5,14 +5,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 const PORT = 3005;
 
 let generateRandomString = () => {
- const result = Math.random().toString(36).substring(2,7)
+ const result = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
  return result
 }
 
 // set view engine to ejs
 app.set("view engine", "ejs");
 
-const urlDatabase = {
+let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
+
 });
 
 app.get("/urls/new", (req, res) => {
@@ -31,13 +32,24 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Your inquiry has been noted");
+  // console.log(req.body);
+
+  let shortURL = generateRandomString();
+  const longURL = req.body.longURL
+  urlDatabase = {...urlDatabase, [shortURL] : longURL};
+  
+  // res.redirect("/urls");
+  res.redirect(`/urls/${shortURL}`)
 });
+
+app.get('/u/:shortURL', (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL]
+  res.redirect(longURL);
+})
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
-  //longurl is accessing the value of the key in URLDatabse object(url parameters is key)
+  //longURL is accessing the value of the key in URLDatabse object(url parameters is key)
   res.render("urls_show", templateVars);
 });
 
