@@ -12,7 +12,7 @@ let generateRandomString = () => {
 // set view engine to ejs
 app.set("view engine", "ejs");
 
-let urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
@@ -36,7 +36,7 @@ app.post("/urls", (req, res) => {
 
   let shortURL = generateRandomString();
   const longURL = req.body.longURL
-  urlDatabase = {...urlDatabase, [shortURL] : longURL};
+  urlDatabase[shortURL] = longURL;
   
   // res.redirect("/urls");
   res.redirect(`/urls/${shortURL}`)
@@ -45,12 +45,23 @@ app.post("/urls", (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
-})
+});
+
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   //longURL is accessing the value of the key in URLDatabse object(url parameters is key)
   res.render("urls_show", templateVars);
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  console.log("good morning mr. west");
+
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  
+  // res.redirect("/urls");
+  res.redirect(`/urls/`)
 });
 
 app.get("/urls.json", (req, res) => {
