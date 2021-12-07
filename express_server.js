@@ -1,6 +1,13 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
 const PORT = 3005;
+
+let generateRandomString = () => {
+ const result = Math.random().toString(36).substring(2,7)
+ return result
+}
 
 // set view engine to ejs
 app.set("view engine", "ejs");
@@ -17,6 +24,15 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
+});
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Your inquiry has been noted");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
