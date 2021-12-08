@@ -74,6 +74,12 @@ app.post("/logout", (req, res) => {
   res.redirect(`/urls/`)
 });
 
+//register page
+app.get('/', (req, res) => {
+  const templateVars = {username: req.cookies["username"]}
+  res.render('register', templateVars)
+})
+
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"]};
   //longURL is accessing the value of the key in URLDatabse object(url parameters is key)
