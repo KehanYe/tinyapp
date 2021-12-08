@@ -25,6 +25,20 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 ////
 ////
 ////
@@ -78,6 +92,20 @@ app.post("/logout", (req, res) => {
 app.get('/register', (req, res) => {
   const templateVars = {username: req.cookies["username"]}
   res.render('register', templateVars)
+})
+
+//register use SUBMIT handler
+app.post('/register', (req, res) => {
+  let userRandomID  = generateRandomString();
+  users[userRandomID] ={
+    id: userRandomID,
+    email: req.body.username,
+    password: req.body.password
+  }
+  
+  console.log("user list", JSON.stringify(users))
+  res.cookie("user", req.body.username)
+  res.redirect("/urls")
 })
 
 app.get("/urls/:shortURL", (req, res) => {
