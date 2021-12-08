@@ -16,9 +16,23 @@ app.set("view engine", "ejs");
 ////
 ////
 //// HELEPER FUNCTIONS & DATABASE
-let generateRandomString = () => {
- const result = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
- return result
+function generateRandomString() {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() *
+characters.length));
+  }
+  return result;
+}
+
+const getUserByEmail = (email) => {
+  for (let user in users) {
+    if(users[user].email === email) {
+    return true
+    } 
+  }
+  return false
 }
 
 const urlDatabase = {
@@ -43,18 +57,20 @@ const users = {
 ////
 ////
 
+// ROOT PAGE
 app.get("/", (req, res) => {
   res.send("Hello Player 1!");
 });
 
+// HOME PAGE
 app.get("/urls", (req, res) => {
-  const templateVars = {urls: urlDatabase, username: req.cookies["username"]};
+  const templateVars = {urls: urlDatabase, user: users[req.cookies["user"]]};
   res.render("urls_index", templateVars);
 
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
+  const templateVars = {user: users[req.cookies["user"]]};
   res.render("urls_new", templateVars);
 });
 
@@ -83,33 +99,42 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   // console.log("good morning mr. west")
-  res.clearCookie('username')
+  res.clearCookie('user')
 
   res.redirect(`/urls/`)
 });
 
-//register page
+//REGISTER PAGE
 app.get('/register', (req, res) => {
-  const templateVars = {username: req.cookies["username"]}
+  const templateVars = {user: users[req.cookies["user"]]}
   res.render('register', templateVars)
 })
 
 //register use SUBMIT handler
 app.post('/register', (req, res) => {
   let userRandomID  = generateRandomString();
+  
+  if (req.body.username.trim() === "" || req.body.password.trim() === ""){
+    return res.status(400).send("Error: no username/password inputed")
+  }
+
+  if (getUserByEmail(req.body.username)) {
+    return res.status(400).send("Error: user already exsits")
+  }
+  
   users[userRandomID] ={
     id: userRandomID,
     email: req.body.username,
     password: req.body.password
   }
-  
-  console.log("user list", JSON.stringify(users))
-  res.cookie("user", req.body.username)
+
+  // console.log("user list", JSON.stringify(users))
+  res.cookie("user", userRandomID)
   res.redirect("/urls")
 })
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"]};
+  const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user"]]};
   //longURL is accessing the value of the key in URLDatabse object(url parameters is key)
   res.render("urls_show", templateVars);
 });
