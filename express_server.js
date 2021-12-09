@@ -4,7 +4,8 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}));
 
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const { application } = require('express');
 app.use(cookieParser())
 
 
@@ -148,6 +149,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect(`/urls/`)
 });
 
+// LOGIN PAGE
+app.get('/login', (req, res) => {
+  const templateVars = {user: users[req.cookies["user"]]}
+  res.render('register', templateVars)
+})
+
+// LOGIN use SUBMIT handler
 app.post("/login", (req, res) => {
   // console.log("good morning mr. west")
   res.cookie('username', req.body.username)
