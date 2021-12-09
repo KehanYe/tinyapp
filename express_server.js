@@ -27,8 +27,20 @@ function generateRandomString() {
 
 const getUserByEmail = (email) => {
 	for (const user in users) {
-		if (users[user].email === email) {
-			return users[user];
+		// console.log(user)
+    if (users[user].email === email) {
+			// console.log(users[user])
+      return users[user];
+		}
+	}
+};
+
+const getUser = (email) => {
+	for (const user in users) {
+		// console.log(user)
+    if (users[user].email === email) {
+			// console.log(users[user])
+      return user;
 		}
 	}
 };
@@ -62,12 +74,13 @@ app.get('/', (req, res) => {
 
 // HOME PAGE
 app.get('/urls', (req, res) => {
-	const templateVars = { urls: urlDatabase, user: users[req.cookies['username']] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']]}
+  console.log("this is template vars", templateVars)
 	res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-	const templateVars = { user: users[req.cookies['username']] };
+	const templateVars = { user: users[req.cookies['user_id']] };
 	res.render('urls_new', templateVars);
 });
 
@@ -89,7 +102,7 @@ app.get('/u/:shortURL', (req, res) => {
 
 //REGISTER PAGE
 app.get('/register', (req, res) => {
-	const templateVars = { user: users[req.cookies['username']] };
+	const templateVars = { user: users[req.cookies['user_id']] };
 	res.render('register', templateVars);
 });
 
@@ -102,7 +115,7 @@ app.post('/register', (req, res) => {
 	}
 
 	if (getUserByEmail(req.body.username)) {
-		return res.status(400).send('Error: user already exsits');
+		return res.status(400).send('Error: user already exists');
 	}
 
 	users[userRandomID] = {
@@ -111,8 +124,8 @@ app.post('/register', (req, res) => {
 		password: req.body.password
 	};
 
-	console.log('user list', JSON.stringify(users));
-	res.cookie('username', userRandomID);
+	// console.log('user list', JSON.stringify(users));
+	res.cookie('user_id', userRandomID);
 	res.redirect('/urls');
 });
 
@@ -139,29 +152,33 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // LOGIN PAGE
 app.get('/login', (req, res) => {
-	const templateVars = { user: users[req.cookies['username']] };
+	const templateVars = { user: users[req.cookies['user_id']] };
 
 	res.render('login', templateVars);
 });
 
 // LOGIN use SUBMIT handler
 app.post('/login', (req, res) => {
-	// console.log("good morning mr. west")
-	const user = getUserByEmail(req.body.username)
-  if (!user){
-    res.status(404).redirect('/register')
+  const userID = getUser(req.body.username)
+  // console.log("GetUSER with req.body.username", userID)
+
+  if (!userID){
+    res.status(403).send("Error: Wrong Email")
     return 
+  } if (users[userID].password !== req.body.password) {
+    res.status(403).send("Error: Password")
+    return
   }
   
-  res.cookie('username', user.id);
+  res.cookie('user_id', userID);
   res.redirect(`/urls/`);
 });
 
 // LOGOUT SUBMIT handler
 app.post('/logout', (req, res) => {
-	// console.log("good morning mr. west")
+	console.log("logout showing")
 	
-  res.clearCookie('username');
+  res.clearCookie('user_id');
 
 	res.redirect(`/urls/`);
 });
