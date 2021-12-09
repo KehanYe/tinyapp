@@ -12,10 +12,12 @@
   <body>
     <%- include('partials/_header') %>
     <form method ="POST" action="/register">
+      <div class="form-group mb-2">
       <label> REGISTER </label>
-      <input type="text" name="username" placeholder="Username" />
-      <input type="password" name="password" placeholder="Password"/>
-      <input type="submit" name="login" />
+        <input type="text" name="username" placeholder="Username" />
+        <input type="password" name="password" placeholder="Password"/>
+        <input type="submit" />
+      </div>
     </form>
   </main>
   <!-- Bootstrap JS -->
