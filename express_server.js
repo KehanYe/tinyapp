@@ -13,9 +13,9 @@ const PORT = 3005;
 // set view engine to ejs
 app.set('view engine', 'ejs');
 
-////
-////
-//// HELEPER FUNCTIONS & DATABASE
+/////////
+/////////
+///////// HELEPER FUNCTIONS /////////
 function generateRandomString() {
 	let result = '';
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -24,6 +24,10 @@ function generateRandomString() {
 	}
 	return result;
 }
+
+app.get('/urls.json', (req, res) => {
+	res.json(urlDatabase[req.cookies]);
+});
 
 const getUserByEmail = (email) => {
 	for (const user in users) {
@@ -44,15 +48,23 @@ const getUser = (email) => {
 		}
 	}
 };
-
+/////////
+/////////
+//////// DATEBASE //////// 
 const urlDatabase = {
-	b2xVn2: 'http://www.lighthouselabs.ca',
-	'9sm5xK': 'http://www.google.com'
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
 };
 
 const users = {
-	userRandomID: {
-		id: 'userRandomID',
+	  aJ48lW: {
+		id: 'aJ48lW',
 		email: 'user@example.com',
 		password: 'purple-monkey-dinosaur'
 	},
@@ -62,10 +74,9 @@ const users = {
 		password: 'dishwasher-funk'
 	}
 };
-
-////
-////
-////
+//////////
+//////////
+//////////
 
 // ROOT PAGE
 app.get('/', (req, res) => {
@@ -74,30 +85,65 @@ app.get('/', (req, res) => {
 
 // HOME PAGE
 app.get('/urls', (req, res) => {
+  userID = req.cookies["user_id"]
+  if(!userID) {
+    return res.status(400).send('Error: User Not Logged In');
+  }
+
+  urslforUserID 
+  for(key in URLDatabse) {
+    if(key === )
+  }
+  
   const templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']]}
-  console.log("this is template vars", templateVars)
+  // console.log("this is template vars", templateVars)
 	res.render('urls_index', templateVars);
 });
 
+//  NEW URL PAGE
 app.get('/urls/new', (req, res) => {
 	const templateVars = { user: users[req.cookies['user_id']] };
 	res.render('urls_new', templateVars);
 });
 
+// ADDING NEW URL submit HANDLER
 app.post('/urls', (req, res) => {
-	// console.log(req.body);
+  // console.log("testing res.cookie", req.cookies["user_id"])
+
+  userID = req.cookies["user_id"]
+  if(!userID) {
+    return res.status(400).send('Error: User Not Logged In');
+  }
 
 	let shortURL = generateRandomString();
-	const longURL = req.body.longURL;
-	urlDatabase[shortURL] = longURL;
-
-	// res.redirect("/urls");
+  
+  urlDatabase[shortURL] =  {
+    longURL: req.body.longURL,
+    userID //bc key = value, shorthand works here
+  },
+	
+  // urlDatabase[req.cookies['user_id'][shortURL]] = longURL;
+  console.log("check if URL is in DATABSE", urlDatabase)
 	res.redirect(`/urls/${shortURL}`);
 });
 
-app.get('/u/:shortURL', (req, res) => {
-	const longURL = urlDatabase[req.params.shortURL];
-	res.redirect(longURL);
+// UPDATING URL handler
+app.post('/urls/:id', (req, res) => {
+
+  userID = req.cookies["user_id"]
+  if(!userID) {
+    return res.status(400).send('Error: User Not Logged In');
+  }
+
+	const shortURL = req.params.id;
+  console.log("URL DATABSE CHECK", urlDatabase)
+  console.log("shortURL Check", shortURL)
+	const newLongURL = req.body.longURL;
+	
+  urlDatabase[shortURL].longURL = newLongURL;
+  console.log("URL DATABSE CHECK once updated", urlDatabase)
+	// console.log(urlDatabase)
+	res.redirect(`/urls/`);
 });
 
 //REGISTER PAGE
@@ -131,21 +177,36 @@ app.post('/register', (req, res) => {
 
 //SHORT URL PAGE
 app.get('/urls/:shortURL', (req, res) => {
-	const templateVars = {
-		shortURL: req.params.shortURL,
-		longURL: urlDatabase[req.params.shortURL],
+  userID = req.cookies["user_id"]
+  if(!userID) {
+    return res.status(400).send('Error: User Not Logged In');
+  }
+  
+  let shortURL = req.params.shortURL;
+  // console.log("checking for SHORTURL", shortURL)
+  const templateVars = {
+		shortURL,
+		longURL: urlDatabase[shortURL].longURL,
 		user: users[req.cookies['user']]
 	};
 	//longURL is accessing the value of the key in URLDatabse object(url parameters is key)
 	res.render('urls_show', templateVars);
 });
 
+//SHORT URL redirect to LONGURL (no login needed)
+app.get('/u/:id', (req, res) => {
+  const longURL = urlDatabase[id].longURL;
+  console.log("longURL is", longURL) 
+	res.redirect(longURL);
+});
+
+
 // DELETING URLS
 app.post('/urls/:shortURL/delete', (req, res) => {
 	// console.log("good morning mr. west");
 
 	const shortURL = req.params.shortURL;
-	delete urlDatabase[shortURL];
+	delete urlDatabase[req.cookies][shortURL];
 
 	res.redirect(`/urls/`);
 });
@@ -183,25 +244,12 @@ app.post('/logout', (req, res) => {
 	res.redirect(`/urls/`);
 });
 
-// UPDATING URL handler
-app.post('/urls/:id', (req, res) => {
-	// console.log("good morning mr. Kanye West");
-	// psuedo code:
-	// 1. take the id referenced in path
-	// 2. go to urlDatabse and change the value associated with ID to new longurl
 
-	const shortURL = req.params.id;
-	// console.log(shortURL)
 
-	const newLongURL = req.body.longURL;
-	urlDatabase[shortURL] = newLongURL;
-	// console.log(urlDatabase)
-	res.redirect(`/urls/`);
-});
 
-app.get('/urls.json', (req, res) => {
-	res.json(urlDatabase);
-});
+
+
+
 
 app.get('/hello', (req, res) => {
 	res.send('<html><body>Welcome <b>Player 1!</b></body></html>\n');
