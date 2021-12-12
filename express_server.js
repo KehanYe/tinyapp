@@ -37,7 +37,6 @@ function generateRandomString() {
 function urlsforUserID(id, database) {
   const userURL = {};
   for (shortURL in database) {
-  // console.log("urlDatabase is", urlDatabase)
     if (database[shortURL]["userID"] === id) {
       userURL[shortURL] = {
         longURL: database[shortURL]["longURL"],
@@ -92,11 +91,7 @@ app.get('/urls', (req, res) => {
     return res.status(400).send('Error: User Not Logged In');
   }
 
-  // console.log("userID of current user", userID)
-  // console.log("user URLS pulled from Database", userURL)
-
   const templateVars = { urls: urlsforUserID(userID, urlDatabase), user: users[req.session.user_id]};
-  // console.log("this is template vars", templateVars)
   res.render('urls_index', templateVars);
 });
 
@@ -108,7 +103,6 @@ app.get('/urls/new', (req, res) => {
 
 // ADDING NEW URL submit HANDLER
 app.post('/urls', (req, res) => {
-  // console.log("testing res.cookie", req.cookies["user_id"])
 
   userID = req.session.user_id;
   if (!userID) {
@@ -122,8 +116,6 @@ app.post('/urls', (req, res) => {
     userID //bc key = value, shorthand works here
   },
 	
-  // urlDatabase[req.cookies['user_id'][shortURL]] = longURL;
-  // console.log("check if URL is in DATABSE", urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -131,8 +123,6 @@ app.post('/urls', (req, res) => {
 app.post('/urls/:id', (req, res) => {
 
   const shortURL = req.params.id;
-  // console.log("URL DATABSE CHECK", urlDatabase);
-  // console.log("shortURL Check", shortURL);
   const newLongURL = req.body.longURL;
 
   userID = req.session["user_id"];
@@ -143,10 +133,8 @@ app.post('/urls/:id', (req, res) => {
   if (req.session.user_id !== urlDatabase[shortURL].userID) {
     return res.status(403).send('Error: Cannot Update. URL belongs to someone else');
   }
-
 	
   urlDatabase[shortURL].longURL = newLongURL;
-  // console.log("URL DATABSE CHECK once updated", urlDatabase);
   res.redirect(`/urls/`);
 });
 
@@ -170,9 +158,7 @@ app.post('/register', (req, res) => {
   }
 
   const password = req.body.password;
-  // console.log("this is original password", password)
   const hashedPassword = bcrypt.hashSync(password, 10);
-  // console.log("this is hash password", hashedPassword)
 
   users[userRandomID] = {
     id: userRandomID,
@@ -180,9 +166,7 @@ app.post('/register', (req, res) => {
     password: hashedPassword
   };
 
-  // console.log('user list', JSON.stringify(users));
   req.session.user_id = userRandomID;
-  console.log("This is cookie when registered", req.session);
   res.redirect('/urls');
 });
 
@@ -194,7 +178,7 @@ app.get('/urls/:shortURL', (req, res) => {
   }
   
   let shortURL = req.params.shortURL;
-  // console.log("checking for SHORTURL", shortURL)
+  
   const templateVars = {
     shortURL,
     longURL: urlDatabase[shortURL].longURL,
@@ -218,14 +202,12 @@ app.get('/u/:id', (req, res) => {
   }
   
   const longURL = shortURLDataBase.longURL;
-  // console.log("longURL is", longURL);
   res.redirect(longURL);
 });
 
 
 // DELETING URLS
 app.post('/urls/:shortURL/delete', (req, res) => {
-  // console.log("good morning mr. west");
   const shortURL = req.params.shortURL;
 
   if (!req.session) {
@@ -254,8 +236,6 @@ app.get('/login', (req, res) => {
 // LOGIN use SUBMIT handler
 app.post('/login', (req, res) => {
   const userID = getUserByEmail(req.body.username, users);
-  // console.log("check for userID after using getUser", userID)
-  // const loggedUser = users[userID]
 
   if (userID) {
     if (bcrypt.compareSync(req.body.password, userID.password)) {
@@ -274,7 +254,6 @@ app.post('/login', (req, res) => {
 
 // LOGOUT SUBMIT handler
 app.post('/logout', (req, res) => {
-  // console.log("logout showing");
 	
   req.session = null;
   res.redirect(`/urls/`);
