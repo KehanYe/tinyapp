@@ -15,10 +15,11 @@
       <h3> Login </h3>
       <form class="form-inline" method="POST" action="/login">
           <div class="form-group mb-2">
-            <label for="username"> </label>
-              <input class="form-control" type="username" name="username" placeholder="Username" style="width: 300px; margin: 1em">
+            <label for="username" class="control-label"> Email: </label>
+              <input class="form-control" type="text" name="username" placeholder="Username" style="width: 300px; margin: 1em">
+            <label for="password" class="control-label"> Password: </label>
               <input class="form-control" type="password" name="password" placeholder="Password" style="width: 300px; margin: 1em">
-              <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary">Login</button>
           </div>
       </form>
   </main>

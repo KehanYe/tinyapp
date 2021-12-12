@@ -25,7 +25,7 @@ app.set('view engine', 'ejs');
 
 ///////// HELEPER FUNCTIONS /////////
 const {getUserByEmail} = require('./helper.js');
-const getUserByEmail = getUserByEmail();
+// let getUserByEmail = getUserByEmail();
 
 function generateRandomString() {
   let result = '';
@@ -80,6 +80,12 @@ const users = {
 // ROOT PAGE
 app.get('/', (req, res) => {
   res.send('Hello Player 1!');
+  if (userID) {
+    return res.redirect(`/urls/`)
+  }
+  if (!user) {
+    return res.redirect(`/login/`)
+  }
 });
 
 // HOME PAGE - URLS LISTED
