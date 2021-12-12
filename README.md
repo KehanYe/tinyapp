@@ -12,8 +12,8 @@ Tiny-url app created by Kehan Fu
 Download via npm install command. Upon download compleetion, use command node in express_server(express_server.js) for more details. 
 
 **Basic Functionality + Final Product:**
-!["Screenshot of URLs page"](https://github.com/KehanYe/tinyapp/blob/master/docs/urls-page-loggedIn.png)
-!["Screenshot of URLs page with several URLs"](https://github.com/KehanYe/tinyapp/blob/master/docs/user-URLs.png)
+!["Screenshot of URLs page"](https://github.com/KehanYe/tinyapp/blob/master/docs/urls-page-singleURL.png)
+!["Screenshot of URLs page with several URLs"](https://github.com/KehanYe/tinyapp/blob/master/docs/urls-page-severlURL.png)
 !["Screenshot of Register page"](https://github.com/KehanYe/tinyapp/blob/master/docs/register-page.png)
 !["Screenshot of URLs update page"](https://github.com/KehanYe/tinyapp/blob/master/docs/edit-URL.png)
 !["Screenshot of create new URLs page"](https://github.com/KehanYe/tinyapp/blob/master/docs/create-newURL.png)
