@@ -31,7 +31,7 @@ if user is logged in:
 if user is not logged in:
   (Minor) redirect to /login
 
-**GET /URLS**
+**GET /urls**
 
 if user is logged in:
   returns HTML with site header (see Display Requirements) a list/table of URLs the user has created
