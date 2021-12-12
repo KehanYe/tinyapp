@@ -13,6 +13,7 @@ Download via npm install command. Upon download compleetion, use command node in
 Basic Functionality:
 
 **HEADER**
+
 if a user is logged in, the header shows:
   the user's email
   a logout button which makes a POST request to /logout
@@ -21,7 +22,8 @@ if a user is not logged in, the header shows:
   a link to the login page (/login)
   a link to the registration page (/register)
 
-**GET /**
+**GET /***
+
 if user is logged in:
   (Minor) redirect to /urls
 
@@ -49,6 +51,7 @@ if user is not logged in:
   redirects to the /login page
 
 **GET /urls/:id**
+
 if user is logged in and owns the URL for the given ID:
   returns HTML with the site header (see Display Requirements) the short URL (for given ID) a form which contains: the corresponding long URL an update button   
   which makes a POST request to /urls/:id
@@ -105,7 +108,8 @@ if user is logged in:
 if user is not logged in:
   returns HTML with: a form which contains input fields for email and password submit button that makes a POST request to /login
 
-**GET /registe**r
+**GET /registe**
+
 if user is logged in:
   (Minor) redirects to /urls
 
@@ -113,6 +117,7 @@ if user is not logged in:
   returns HTML with: a form which contains input fields for email and password a register button that makes a POST request to /register
 
 **POST /login**
+
 if email and password params match an existing user:
   sets a cookie redirects to /urls
 
@@ -120,6 +125,7 @@ if email and password params don't match an existing user:
   returns HTML with a relevant error message
 
 **POST /register**
+
 if email or password are empty:
   returns HTML with a relevant error message
 
@@ -130,4 +136,5 @@ if registeration is approved:
   creates a new user encrypts the new user's password with bcrypt and sets a cookie redirects to /urls
 
 **POST /logout**
+
   deletes cookie redirects to /urls
