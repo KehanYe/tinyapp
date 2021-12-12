@@ -1,7 +1,8 @@
 Tiny-url app created by Kehan Fu
 
-**Necessary dependencies:
-**"bcryptjs" version 2.4.3,
+**Necessary dependencies**
+
+"bcryptjs" version 2.4.3,
 "body-parser" version 1.19.0,
 "cookie-session" version 1.4.0,
 "ejs" version 3.1.6,
@@ -10,7 +11,7 @@ Tiny-url app created by Kehan Fu
 
 Download via npm install command. Upon download compleetion, use command node in express_server(express_server.js) for more details. 
 
-Basic Functionality:
+**Basic Functionality:**
 
 **HEADER**
 
@@ -22,7 +23,7 @@ if a user is not logged in, the header shows:
   a link to the login page (/login)
   a link to the registration page (/register)
 
-**GET /***
+**GET /**
 
 if user is logged in:
   (Minor) redirect to /urls
