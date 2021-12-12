@@ -243,7 +243,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {  
   const userID = getUserByEmail(req.body.username, users);
   // console.log("check for userID after using getUser", userID)
-  const loggedUser = users[userID]
+  // const loggedUser = users[userID]
 
   if (userID) {
     if (bcrypt.compareSync(req.body.password, userID.password)) {
