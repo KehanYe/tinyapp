@@ -9,6 +9,27 @@ const getUserByEmail = (email, database) => {
   return undefined;
 };
 
+const generateRandomString = () => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+const urlsforUserID = (id, database) => {
+  const userURL = {};
+  for (shortURL in database) {
+    if (database[shortURL]["userID"] === id) {
+      userURL[shortURL] = {
+        longURL: database[shortURL]["longURL"],
+        userID: database[shortURL]["userID"]
+      };
+    }
+  }
+  return userURL;
+}
 
 
-module.exports = {getUserByEmail};
+module.exports = {getUserByEmail, generateRandomString, urlsforUserID};

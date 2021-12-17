@@ -24,28 +24,8 @@ app.set('view engine', 'ejs');
 
 ///////// HELEPER FUNCTIONS /////////
 const {getUserByEmail} = require('./helper.js');
-
-function generateRandomString() {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
-
-function urlsforUserID(id, database) {
-  const userURL = {};
-  for (shortURL in database) {
-    if (database[shortURL]["userID"] === id) {
-      userURL[shortURL] = {
-        longURL: database[shortURL]["longURL"],
-        userID: database[shortURL]["userID"]
-      };
-    }
-  }
-  return userURL;
-}
+const {generateRandomString} = require('./helper.js');
+const {urlsforUserID} = require('./helper.js');
 
 //////// DATEBASE ////////
 const urlDatabase = {
@@ -75,20 +55,20 @@ const users = {
 
 // ROOT PAGE
 app.get('/', (req, res) => {
-  res.send('Hello Player 1!');
-  if (userID) {
+  userID = req.session.user_id;
+  if (!userID) {
+    return res.redirect(`/login/`);
+  } else {
     return res.redirect(`/urls/`);
   }
-  if (!user) {
-    return res.redirect(`/login/`);
-  }
+  
 });
 
 // HOME PAGE - URLS LISTED
 app.get('/urls', (req, res) => {
   userID = req.session.user_id;
   if (!userID) {
-    return res.status(400).send('Error: User Not Logged In');
+    return res.redirect(`/login/`);
   }
 
   const templateVars = { urls: urlsforUserID(userID, urlDatabase), user: users[req.session.user_id]};
@@ -97,6 +77,11 @@ app.get('/urls', (req, res) => {
 
 //  NEW URL PAGE
 app.get('/urls/new', (req, res) => {
+  userID = req.session.user_id;
+  if (!userID) {
+    return res.redirect(`/login/`);
+  }
+  
   const templateVars = { user: users[req.session.user_id] };
   res.render('urls_new', templateVars);
 });
@@ -225,6 +210,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // LOGIN PAGE
 app.get('/login', (req, res) => {
+  let userID = req.session.user_id;
   if (userID) {
     return res.redirect(`/urls/`);
   }
