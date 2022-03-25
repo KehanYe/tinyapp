@@ -98,7 +98,7 @@ app.post('/urls', (req, res) => {
   
   urlDatabase[shortURL] =  {
     longURL: req.body.longURL,
-    userID //bc key = value, shorthand works here
+    userID //bcuz key = value, shorthand works here
   },
 	
   res.redirect(`/urls/${shortURL}`);
@@ -133,6 +133,7 @@ app.get('/register', (req, res) => {
 //REGISTER use SUBMIT handler
 app.post('/register', (req, res) => {
   let userRandomID = generateRandomString();
+  const password = req.body.password;
 
   if (req.body.username.trim() === '' || req.body.password.trim() === '') {
     return res.status(400).send('Error: no username/password inputed');
@@ -141,9 +142,21 @@ app.post('/register', (req, res) => {
   if (getUserByEmail(req.body.username, users)) {
     return res.status(400).send('Error: user already exists');
   }
+  
+  // SYNCHRONUS HASH 
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-  const password = req.body.password;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  // ASYNC HASH USING PROMISES (for future reference)
+  // const hashedPassword = bcrypt.genSalt(10)
+  //   .then(salt => {
+  //     console.log('salt promise:', salt)
+  //     return bcrypt.hash(password, salt)
+  //   })
+  //   .then(hash => {
+  //     console.log('hash promise', hash)
+  //   })
+  //   .then()
+  //   .catch(error => console.log(error))
 
   users[userRandomID] = {
     id: userRandomID,
@@ -156,13 +169,22 @@ app.post('/register', (req, res) => {
 });
 
 //SHORT URL PAGE
-app.get('/urls/:shortURL', (req, res) => {
-  let userID = req.session.user_id;
-  if (!userID) {
-    return res.status(400).send('Error: User Not Logged In');
+app.get('/urls/:id', (req, res) => {
+  const userID = req.session.user_id;
+  const shortURL = req.params.id;
+  const shortURLDataBase = urlDatabase[shortURL];
+
+  if (!shortURLDataBase) {
+    return res.status(400).send('Error: URL not in the Database');
   }
-  
-  let shortURL = req.params.shortURL;
+
+  if (!userID) {
+    return res.status(400).send('Error: User not logged in');
+  }
+
+  if (userID !== urlDatabase[shortURL].userID) {
+    return res.status(400).send('No Permission to access URL');
+  }
   
   const templateVars = {
     shortURL,
@@ -182,9 +204,13 @@ app.get('/u/:id', (req, res) => {
     return res.status(400).send('Error: URL not in the Database');
   }
 
-  if (!userID) {
-    return res.status(400).send('Error: URL not in the Database');
-  }
+  // if (!userID) {
+  //   return res.status(400).send('Error: URL not in the Database');
+  // }
+
+  // if (userID !== urlDatabase[shortURL].userID) {
+  //   return res.status(400).send('No Permission to access URL');
+  // }
   
   const longURL = shortURLDataBase.longURL;
   res.redirect(longURL);
@@ -193,7 +219,7 @@ app.get('/u/:id', (req, res) => {
 
 // DELETING URLS
 app.post('/urls/:shortURL/delete', (req, res) => {
-  const shortURL = req.params.shortURL;
+  const { shortURL } = req.params;
 
   if (!req.session) {
     return res.status(401).send('Error: Cannot Delete. Not logged in.');
