@@ -27,18 +27,23 @@ app.set('view engine', 'ejs');
 const {getUserByEmail} = require('./helper.js');
 const {generateRandomString} = require('./helper.js');
 const {urlsforUserID} = require('./helper.js');
+// const {uniqueVisitors} = require('./helper.js');
 
 //////// DATEBASE ////////
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
     userID: "aJ48lW",
-    date: D.toDateString()
+    date: D.toDateString(),
+    visitorIds: [],
+    traffic: 0
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
     userID: "aJ48lW",
-    date: D.toDateString()
+    date: D.toDateString(),
+    visitorIds: [],
+    traffic: 0
   }
 };
 
@@ -102,7 +107,9 @@ app.post('/urls', (req, res) => {
   urlDatabase[shortURL] =  {
     longURL: req.body.longURL,
     userID, 
-    date: D.toDateString()
+    date: D.toDateString(),
+    visitorIds: [],
+    traffic: 0
   },
 	
   res.redirect(`/urls/${shortURL}`);
@@ -178,6 +185,7 @@ app.get('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const shortURLDataBase = urlDatabase[shortURL];
 
+  // authentication and error response
   if (!shortURLDataBase) {
     return res.status(400).send('Error: URL not in the Database');
   }
@@ -202,21 +210,28 @@ app.get('/urls/:id', (req, res) => {
 //SHORT URL redirect to LONGURL (no login needed)
 app.get('/u/:id', (req, res) => {
   const shortURL = req.params.id;
-  const shortURLDataBase = urlDatabase[shortURL];
+  const urlObj = urlDatabase[shortURL];
+  const visitorId = req.session.visitor_id
   
-  if (!shortURLDataBase) {
+  if (!urlObj) {
     return res.status(400).send('Error: URL not in the Database');
   }
 
-  // if (!userID) {
-  //   return res.status(400).send('Error: URL not in the Database');
-  // }
+  //calculating traffic per click
+    urlDatabase[shortURL]['traffic'] +=1
 
-  // if (userID !== urlDatabase[shortURL].userID) {
-  //   return res.status(400).send('No Permission to access URL');
-  // }
+  //creating visitor cookie to track unique visitor
+  if(visitorId) {
+    if (!urlObj.visitorIds.includes(visitorId)) {
+      urlDatabase[shortURL]['visitorIds'].push(visitorId)
+    }
+   ;
+  } else {
+    req.session.visitor_id = generateRandomString();
+    urlDatabase[shortURL]['visitorIds'].push(req.session.visitor_id);
+  } 
   
-  const longURL = shortURLDataBase.longURL;
+  const longURL = urlObj.longURL;
   res.redirect(longURL);
 });
 

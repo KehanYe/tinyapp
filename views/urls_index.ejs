@@ -20,31 +20,32 @@
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
           <th scope="col">Date</th>
-          <th scope="col">Clicks</th>
+          <th scope="col">Traffic</th>
           <th scope="col">Unique Visits</th>
         </tr>
       </thead>
       <tbody>
-        <% for(let url in urls) { %>
+        <% for(let shorturl in urls) { %>
           <tr>
-            <td><%= url %></td>
-            <td><%= urls[url].longURL %></td>
+            <td><%= shorturl %></td>
+            <td><%= urls[shorturl].longURL %></td>
               <td>  
-                <form class="form-inline" method="GET" action="/urls/<%= url %>">
+                <form class="form-inline" method="GET" action="/urls/<%= shorturl %>">
                   <div class="form-group mb-2">
                     <button type="submit" class="btn btn-primary">Update</button>
                   </div>
                 </form>
               </td>
               <td> 
-                <form class="form-inline" method="POST" action="/urls/<%= url %>/delete">
+                <form class="form-inline" method="POST" action="/urls/<%= shorturl %>/delete">
                   <div class="form-group mb-2">
                     <button type="submit" class="btn btn-primary">Delete</button>
                   </div>
                 </form>
               </td>
-              <td> <%= urls[url].date %> </td>
-            
+              <td> <%= urls[shorturl].date %> </td>
+              <td> <%= urls[shorturl].traffic %> </td>
+              <td> <%= urls[shorturl].visitorIds.length %> </td>
             
           </tr>
         <% } %>

@@ -1,3 +1,5 @@
+// ShortURL = id Parameter
+
 const getUserByEmail = (email, database) => {
   for (const userID in database) {
     // console.log(user)
@@ -16,23 +18,17 @@ const generateRandomString = () => {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
-}
+};
 
 const D = new Date();
-
 const urlsforUserID = (id, database) => {
   const userURL = {};
   for (shortURL in database) {
     if (database[shortURL]["userID"] === id) {
-      userURL[shortURL] = {
-        longURL: database[shortURL]["longURL"],
-        userID: database[shortURL]["userID"],
-        date: D.toDateString()
-      };
+      userURL[shortURL] = database[shortURL]
     }
   }
   return userURL;
-}
-
+};
 
 module.exports = {getUserByEmail, generateRandomString, urlsforUserID};
