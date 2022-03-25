@@ -18,13 +18,16 @@ const generateRandomString = () => {
   return result;
 }
 
+const D = new Date();
+
 const urlsforUserID = (id, database) => {
   const userURL = {};
   for (shortURL in database) {
     if (database[shortURL]["userID"] === id) {
       userURL[shortURL] = {
         longURL: database[shortURL]["longURL"],
-        userID: database[shortURL]["userID"]
+        userID: database[shortURL]["userID"],
+        date: D.toDateString()
       };
     }
   }

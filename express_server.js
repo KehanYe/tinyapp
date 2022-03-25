@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 
 const PORT = 3005;
+const D = new Date();
 
 ///////// MIDDLEWARE /////////
 const cookieSession = require('cookie-session');
@@ -31,11 +32,13 @@ const {urlsforUserID} = require('./helper.js');
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
+    userID: "aJ48lW",
+    date: D.toDateString()
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    userID: "aJ48lW"
+    userID: "aJ48lW",
+    date: D.toDateString()
   }
 };
 
@@ -98,7 +101,8 @@ app.post('/urls', (req, res) => {
   
   urlDatabase[shortURL] =  {
     longURL: req.body.longURL,
-    userID //bcuz key = value, shorthand works here
+    userID, 
+    date: D.toDateString()
   },
 	
   res.redirect(`/urls/${shortURL}`);
